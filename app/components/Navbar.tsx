@@ -58,7 +58,7 @@ const navItems: NavItem[] = [
       },
     ],
   },
-  { name: "Amazon Aurora Serverless v2", href: "/auroraserverless" },
+  { name: "Amazon Aurora Serverless v2", href: "/amazonauroraserverless" },
 ];
 
 export default function Navbar() {
