@@ -1,40 +1,68 @@
 "use client";
 
-import React, { useState } from "react";
+import { useUserStore } from "@/lib/store";
+import { main } from "framer-motion/client";
+import React, { useState, useEffect } from "react";
 
 type Props = {};
 
 const Page = (props: Props) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { users, fetchUsers, addUser, updateUser, removeUser } = useUserStore();
+  const [newName, setNewName] = useState("");
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        {isLoggedIn ? (
-          <div className="flex items-center gap-4">
-            <p className="text-lg font-semibold">Sign in first!</p>
-          </div>
-        ) : (
-          <div className="flex">
-            {/* LEFT */}
-            <div className="flex flex-col gap-4 w-1/2">
-              <h1 className="text-3xl font-bold">Amazon DocumentDB</h1>
-              <p className="text-lg">
-                Amazon Relational Database Service (RDS) is a managed service
-                that simplifies the setup, operation, and scaling of relational
-                databases in the cloud.
-              </p>
+        <div className="flex">
+          <div className="flex flex-col items-start w-1/2">
+            <h1 className="text-xl mb-4">CRUD Felhasználók</h1>
+            <div className="flex gap-2 mb-4">
+              <input
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Új felhasználó neve"
+                className="border px-2"
+              />
+              <button
+                onClick={() => {
+                  addUser(newName);
+                  setNewName("");
+                }}
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                add
+              </button>
             </div>
-            {/* RIGHT */}
-            <div className="flex flex-col gap-4 w-1/2">
-              <h2 className="text-2xl font-semibold">Key Features</h2>
-              <ul className="list-disc pl-5">
-                <li>Automated backups and snapshots</li>
-                <li>Multi-AZ deployments for high availability</li>
-                <li>Read replicas for improved performance</li>
-              </ul>
-            </div>
+            <ul className="list-disc pl-5">
+              {users.map((u, idx) => (
+                <li key={`${u.id}-${idx}`} className="flex items-center gap-4">
+                  <span>{u.name}</span>
+                  <button
+                    onClick={() => {
+                      const name = prompt("Új név", u.name);
+                      if (name) updateUser(u.id, name);
+                    }}
+                    className="px-2 py-1 bg-yellow-300 rounded"
+                  >
+                    update
+                  </button>
+                  <button
+                    className="px-2 py-1 bg-red-400 text-white border rounded-xl"
+                    onClick={() => removeUser(u.id)}
+                  >
+                    remove
+                  </button>
+                  {/* … */}
+                </li>
+              ))}
+            </ul>
           </div>
-        )}
+        </div>
       </main>
     </div>
   );
